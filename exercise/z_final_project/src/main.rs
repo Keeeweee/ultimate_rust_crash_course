@@ -130,6 +130,18 @@ fn main() {
 
         // **OPTION**
         // Generate -- see the generate() function below -- this should be sort of like "fractal()"!
+        "generate" => {
+            if args.len() != 4 {
+                print_usage_and_exit();
+            }
+            let outfile = args.remove(0);
+            let red: u8 = args.remove(0).parse().expect("Failed to parse a number");
+            let green: u8 = args.remove(0).parse().expect("Failed to parse a number");
+            let blue: u8 = args.remove(0).parse().expect("Failed to parse a number");
+
+
+            generate(outfile, red, green, blue);
+        }
 
         // For everything else...
         _ => {
@@ -147,6 +159,7 @@ fn print_usage_and_exit() {
     println!("invert INFILE OUTFILE");
     println!("grayscale INFILE OUTFILE");
     println!("fractal OUTFILE");
+    println!("generate OUTFILE RED GREEN BLUE");
     // **OPTION**
     // Print useful information about what subcommands and arguments you can use
     // println!("...");
@@ -264,7 +277,7 @@ fn grayscale(infile: String, outfile: String) {
     img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
-fn generate(outfile: String) {
+fn generate(outfile: String, red: u8, green: u8, blue: u8) {
     // Create an ImageBuffer -- see fractal() for an example
 
     // Iterate over the coordinates and pixels of the image -- see fractal() for an example
@@ -277,6 +290,40 @@ fn generate(outfile: String) {
     // Challenge 2: Generate something more interesting!
 
     // See blur() for an example of how to save the image
+
+    let width = 729;
+    let height = 729;
+
+    let mut imgbuf = image::ImageBuffer::new(width, height);
+
+    let inverse_red = 255 - red;
+    let inverse_green = 255 - green;
+    let inverse_blue = 255 - blue;
+
+    // Iterate over the coordinates and pixels of the image
+    for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+        if in_sierpinski_square(x, y) {
+            *pixel = image::Rgb([inverse_red, inverse_green, inverse_blue]);
+        }
+        else {
+            *pixel = image::Rgb([red, green, blue]);
+        }
+    }
+
+    imgbuf.save(outfile).unwrap();
+}
+
+fn in_sierpinski_square(x: u32, y: u32) -> bool {
+    let mut xc = x;
+    let mut yc = y;
+    while xc > 0 && yc > 0 {
+        if xc % 3 == 1 && yc % 3 == 1 {
+            return false;
+        }
+        xc /= 3;
+        yc /= 3;
+    }
+    true
 }
 
 // This code was adapted from https://github.com/PistonDevelopers/image
