@@ -53,6 +53,16 @@ fn main() {
 
         // **OPTION**
         // Brighten -- see the brighten() function below
+        "brighten" => {
+            if args.len() != 3 {
+                print_usage_and_exit();
+            }
+            let infile = args.remove(0);
+            let outfile = args.remove(0);
+            let brighten_ammount: i32 = args.remove(0).parse().expect("Failed to parse a number");
+
+            brighten(infile, outfile, brighten_ammount);
+        }
 
         // **OPTION**
         // Crop -- see the crop() function below
@@ -88,6 +98,7 @@ fn main() {
 fn print_usage_and_exit() {
     println!("USAGE (when in doubt, use a .png extension on your filenames)");
     println!("blur INFILE OUTFILE BLUR");
+    println!("brighten INFILE OUTFILE BRIGHTEN");
     println!("fractal OUTFILE");
     // **OPTION**
     // Print useful information about what subcommands and arguments you can use
@@ -106,7 +117,7 @@ fn blur(infile: String, outfile: String, blur: f32) {
     img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
-fn brighten(infile: String, outfile: String) {
+fn brighten(infile: String, outfile: String, brighten: i32) {
     // See blur() for an example of how to open / save an image.
 
     // .brighten() takes one argument, an i32.  Positive numbers brighten the
@@ -114,6 +125,12 @@ fn brighten(infile: String, outfile: String) {
 
     // Challenge: parse the brightness amount from the command-line and pass it
     // through to this function.
+
+    let img = image::open(infile).expect("Failed to open INFILE.");
+
+    let img2 = img.brighten(brighten);
+
+    img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
 fn crop(infile: String, outfile: String) {
