@@ -66,6 +66,19 @@ fn main() {
 
         // **OPTION**
         // Crop -- see the crop() function below
+        "crop" => {
+            if args.len() != 6 {
+                print_usage_and_exit();
+            }
+            let infile = args.remove(0);
+            let outfile = args.remove(0);
+            let x: u32 = args.remove(0).parse().expect("Failed to parse a number");
+            let y: u32 = args.remove(0).parse().expect("Failed to parse a number");
+            let width: u32 = args.remove(0).parse().expect("Failed to parse a number");
+            let height: u32 = args.remove(0).parse().expect("Failed to parse a number");
+
+            crop(infile, outfile, x, y, width, height);
+        }
 
         // **OPTION**
         // Rotate -- see the rotate() function below
@@ -99,6 +112,7 @@ fn print_usage_and_exit() {
     println!("USAGE (when in doubt, use a .png extension on your filenames)");
     println!("blur INFILE OUTFILE BLUR");
     println!("brighten INFILE OUTFILE BRIGHTEN");
+    println!("crop INFILE OUTFILE X Y WIDTH HEIGHT");
     println!("fractal OUTFILE");
     // **OPTION**
     // Print useful information about what subcommands and arguments you can use
@@ -133,7 +147,7 @@ fn brighten(infile: String, outfile: String, brighten: i32) {
     img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
-fn crop(infile: String, outfile: String) {
+fn crop(infile: String, outfile: String, x: u32, y: u32, width: u32, height: u32) {
     // See blur() for an example of how to open an image.
 
     // .crop() takes four arguments: x: u32, y: u32, width: u32, height: u32
@@ -143,6 +157,12 @@ fn crop(infile: String, outfile: String) {
     // through to this function.
 
     // See blur() for an example of how to save the image.
+
+    let mut img = image::open(infile).expect("Failed to open INFILE.");
+
+    let img2  = img.crop(x, y, width, height);
+
+    img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
 fn rotate(infile: String, outfile: String) {
