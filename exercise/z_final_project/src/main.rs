@@ -97,6 +97,15 @@ fn main() {
 
         // **OPTION**
         // Invert -- see the invert() function below
+        "invert" => {
+            if args.len() != 2 {
+                print_usage_and_exit();
+            }
+            let infile = args.remove(0);
+            let outfile = args.remove(0);
+
+            invert(infile, outfile);
+        }
 
         // **OPTION**
         // Grayscale -- see the grayscale() function below
@@ -126,6 +135,7 @@ fn print_usage_and_exit() {
     println!("brighten INFILE OUTFILE BRIGHTEN");
     println!("crop INFILE OUTFILE X Y WIDTH HEIGHT");
     println!("rotate INFILE OUTFILE [-]90|180|270");
+    println!("invert INFILE OUTFILE");
     println!("fractal OUTFILE");
     // **OPTION**
     // Print useful information about what subcommands and arguments you can use
@@ -222,6 +232,12 @@ fn invert(infile: String, outfile: String) {
     // will use the same image to save out to a different file.
 
     // See blur() for an example of how to save the image.
+
+    let mut img = image::open(infile).expect("Failed to open INFILE.");
+
+    img.invert();
+
+    img.save(outfile).expect("Failed writing OUTFILE.");
 }
 
 fn grayscale(infile: String, outfile: String) {
