@@ -25,6 +25,8 @@
 //
 //     let positive_number: u32 = some_string.parse().expect("Failed to parse a number");
 
+use image::DynamicImage;
+
 fn main() {
     // 1. First, you need to implement some basic command-line argument handling
     // so you can make your program do different things.  Here's a little bit
@@ -82,6 +84,16 @@ fn main() {
 
         // **OPTION**
         // Rotate -- see the rotate() function below
+        "rotate" => {
+            if args.len() != 3 {
+                print_usage_and_exit();
+            }
+            let infile = args.remove(0);
+            let outfile = args.remove(0);
+            let degrees: i32 = args.remove(0).parse().expect("Failed to parse a number");
+
+            rotate(infile, outfile, degrees);
+        }
 
         // **OPTION**
         // Invert -- see the invert() function below
@@ -113,6 +125,7 @@ fn print_usage_and_exit() {
     println!("blur INFILE OUTFILE BLUR");
     println!("brighten INFILE OUTFILE BRIGHTEN");
     println!("crop INFILE OUTFILE X Y WIDTH HEIGHT");
+    println!("rotate INFILE OUTFILE [-]90|180|270");
     println!("fractal OUTFILE");
     // **OPTION**
     // Print useful information about what subcommands and arguments you can use
@@ -165,7 +178,7 @@ fn crop(infile: String, outfile: String, x: u32, y: u32, width: u32, height: u32
     img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
-fn rotate(infile: String, outfile: String) {
+fn rotate(infile: String, outfile: String, rotation: i32) {
     // See blur() for an example of how to open an image.
 
     // There are 3 rotate functions to choose from (all clockwise):
@@ -178,6 +191,28 @@ fn rotate(infile: String, outfile: String) {
     // through to this function to select which method to call.
 
     // See blur() for an example of how to save the image.
+    let rotation = if rotation < 0 { 360 + rotation } else { rotation };
+
+    let img = image::open(infile).expect("Failed to open INFILE.");
+
+    let img2 = match rotation {
+        x if x == 90 => {
+            img.rotate90()
+        },
+        x if x == 180 => {
+            img.rotate180()
+        },
+        x if x == 270 => {
+            img.rotate270()
+        },
+        _ => {
+            println!("{}", rotation % 360);
+            print_usage_and_exit();
+            return;
+        }
+    };
+
+    img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
 fn invert(infile: String, outfile: String) {
