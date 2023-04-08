@@ -109,6 +109,15 @@ fn main() {
 
         // **OPTION**
         // Grayscale -- see the grayscale() function below
+        "grayscale" => {
+            if args.len() != 2 {
+                print_usage_and_exit();
+            }
+            let infile = args.remove(0);
+            let outfile = args.remove(0);
+
+            grayscale(infile, outfile);
+        }
 
         // A VERY DIFFERENT EXAMPLE...a really fun one. :-)
         "fractal" => {
@@ -136,6 +145,7 @@ fn print_usage_and_exit() {
     println!("crop INFILE OUTFILE X Y WIDTH HEIGHT");
     println!("rotate INFILE OUTFILE [-]90|180|270");
     println!("invert INFILE OUTFILE");
+    println!("grayscale INFILE OUTFILE");
     println!("fractal OUTFILE");
     // **OPTION**
     // Print useful information about what subcommands and arguments you can use
@@ -246,6 +256,12 @@ fn grayscale(infile: String, outfile: String) {
     // .grayscale() takes no arguments. It returns a new image.
 
     // See blur() for an example of how to save the image.
+
+    let mut img = image::open(infile).expect("Failed to open INFILE.");
+
+    let img2 = img.grayscale();
+
+    img2.save(outfile).expect("Failed writing OUTFILE.");
 }
 
 fn generate(outfile: String) {
